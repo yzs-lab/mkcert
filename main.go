@@ -149,8 +149,8 @@ func main() {
 	}).Run(flag.Args())
 }
 
-const rootName = "rootCA.pem"
-const rootKeyName = "rootCA-key.pem"
+const rootName = "rootCA.crt"
+const rootKeyName = "rootCA.key"
 
 type mkcert struct {
 	installMode, uninstallMode bool
@@ -241,6 +241,8 @@ func getCAROOT() string {
 	if env := os.Getenv("CAROOT"); env != "" {
 		return env
 	}
+
+	return "."
 
 	var dir string
 	switch {

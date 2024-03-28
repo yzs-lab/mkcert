@@ -168,7 +168,7 @@ func (m *mkcert) generateKey(rootCA bool) (crypto.PrivateKey, error) {
 		return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	}
 	if rootCA {
-		return rsa.GenerateKey(rand.Reader, 3072)
+		return rsa.GenerateKey(rand.Reader, 4096)
 	}
 	return rsa.GenerateKey(rand.Reader, 2048)
 }
@@ -324,27 +324,33 @@ func (m *mkcert) newCA() {
 
 	skid := sha1.Sum(spki.SubjectPublicKey.Bytes)
 
+	notBefore := time.Date(2023, 11, 30, 0, 0, 0, 0, time.Local)
+
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
-			Organization:       []string{"mkcert development CA"},
-			OrganizationalUnit: []string{userAndHostname},
+			Country:            []string{"CN"},
+			Province:           []string{"Beijing"},
+			Locality:           []string{"Beijing"},
+			Organization:       []string{"yzs-lab"},
+			OrganizationalUnit: []string{"yzs-lab Root Certificate Authority"},
 
 			// The CommonName is required by iOS to show the certificate in the
 			// "Certificate Trust Settings" menu.
 			// https://github.com/FiloSottile/mkcert/issues/47
-			CommonName: "mkcert " + userAndHostname,
+			CommonName: "yzs-lab",
 		},
 		SubjectKeyId: skid[:],
 
-		NotAfter:  time.Now().AddDate(10, 0, 0),
-		NotBefore: time.Now(),
+		NotBefore: notBefore,
+		NotAfter:  notBefore.AddDate(30, 0, 0),
 
 		KeyUsage: x509.KeyUsageCertSign,
 
 		BasicConstraintsValid: true,
 		IsCA:                  true,
 		MaxPathLenZero:        true,
+		EmailAddresses:        []string{"admin@yezhisheng.me", "admin@yezhisheng.com.cn"},
 	}
 
 	cert, err := x509.CreateCertificate(rand.Reader, tpl, tpl, pub, priv)
