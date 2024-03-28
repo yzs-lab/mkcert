@@ -64,8 +64,8 @@ func (m *mkcert) makeCert(hosts []string) {
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
-			Organization:       []string{"mkcert development certificate"},
-			OrganizationalUnit: []string{userAndHostname},
+			Organization:       []string{"yzs-lab"},
+			OrganizationalUnit: []string{"yzs-lab certificates"},
 		},
 
 		NotBefore: time.Now(), NotAfter: expiration,
@@ -370,5 +370,5 @@ func (m *mkcert) newCA() {
 }
 
 func (m *mkcert) caUniqueName() string {
-	return "mkcert development CA " + m.caCert.SerialNumber.String()
+	return "yzs-lab Root Certificate Authority " + m.caCert.SerialNumber.String()
 }
